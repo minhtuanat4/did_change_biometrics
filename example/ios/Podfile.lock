@@ -1,0 +1,22 @@
+PODS:
+  - did_change_biometrics (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - did_change_biometrics (from `.symlinks/plugins/did_change_biometrics/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  did_change_biometrics:
+    :path: ".symlinks/plugins/did_change_biometrics/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  did_change_biometrics: f85e6c83f7aae38c392bf04c03dbceaf41330de1
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+
+PODFILE CHECKSUM: 918ee3f31c0989f8d871c0e19a33a1a37f54d659
+
+COCOAPODS: 1.12.1
