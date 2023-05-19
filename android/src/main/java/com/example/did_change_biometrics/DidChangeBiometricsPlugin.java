@@ -82,6 +82,15 @@ public class DidChangeBiometricsPlugin
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("check")) {
       authenticateFingerPrint(result);
+    } else if (call.method.equals("registerSecretKey")) {
+        generateSecretKey(new KeyGenParameterSpec.Builder(
+        KEY_NAME,
+        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+        .setUserAuthenticationRequired(true)
+        .setInvalidatedByBiometricEnrollment(true)
+        .build());
     } else {
       result.notImplemented();
     }
@@ -139,12 +148,9 @@ private void authenticateFingerPrint(Result result) {
     generateSecretKey(new KeyGenParameterSpec.Builder(
         KEY_NAME,
         KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
         .setUserAuthenticationRequired(true)
-        // Invalidate the keys if the user has registered a new biometric
-        // credential, such as a new fingerprint. Can call this method only
-        // on Android 7.0 (API level 24) or higher. The variable
         .setInvalidatedByBiometricEnrollment(true)
         .build());
   }
@@ -154,18 +160,6 @@ private void authenticateFingerPrint(Result result) {
   } catch (KeyPermanentlyInvalidatedException e) {
     System.out.print("key has changed");
     result.success("biometric_did_change");
-
-    generateSecretKey(new KeyGenParameterSpec.Builder(
-        KEY_NAME,
-        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-        .setUserAuthenticationRequired(true)
-        // Invalidate the keys if the user has registered a new biometric
-        // credential, such as a new fingerprint. Can call this method only
-        // on Android 7.0 (API level 24) or higher. The variable
-        .setInvalidatedByBiometricEnrollment(true)
-        .build());
   } catch (InvalidKeyException e) {
     e.printStackTrace();
     result.success("biometric_invalid");

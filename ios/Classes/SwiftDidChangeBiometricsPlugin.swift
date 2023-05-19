@@ -32,14 +32,14 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
                     default:
                         result(FlutterError(code:"unknow", message: data, details: nil))
                     }}
+
+            case "registerSecretKey": 
+                registerSecretKey()
             default:
-                result(FlutterMethodNotImplemented)
-                
-                
+                result(FlutterMethodNotImplemented)   
             }
     }
-//result:@escaping FlutterResult, reason : String
-    
+
     private func authenticateBiometrics(complete: @escaping (String?, Int?) -> Void) {
 
         let policy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
@@ -51,13 +51,6 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
             return
         }
         
-//        context.evaluatePolicy(policy, localizedReason: reason) { (success , error) in
-//
-//            guard success else {
-//                complete(nil, -99)
-//                return
-//            }
-//
             if self.preferences.object(forKey: self.currenMyFingerprintKey) != nil {
                 self.currenMyFingerprintData = self.preferences.data(forKey:  self.currenMyFingerprintKey)
             }
@@ -75,7 +68,19 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
             } else {
                 complete("FingerprintData was created",998)
             }
-//        }
+
+    }
+
+    private func registerSecretKey(){
+        let policy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
+        let context = LAContext()
+        var authError : NSError?
+        
+        guard context.canEvaluatePolicy(policy, error: &authError) else {
+            return
+        }
+        let newFingerprintData = context.evaluatedPolicyDomainState
+        self.preferences.set(newFingerprintData, forKey: self.currenMyFingerprintKey) 
     }
     
 }

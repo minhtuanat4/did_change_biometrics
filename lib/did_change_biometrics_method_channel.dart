@@ -19,16 +19,11 @@ class MethodChannelDidChangeBiometrics extends DidChangeBiometricsPlatform {
   @override
   Future<String?> onCheckBiometrics() async {
     final result = await methodChannel.invokeMethod<String>('check');
-
-    // switch (result) {
-    //   case 'biometric_valid':
-    //     return AuthLocalStatus.valid;
-    //   case 'biometric_invalid':
-    //     return AuthLocalStatus.invalid;
-    //   case 'biometric_did_change':
-    //     return AuthLocalStatus.changed;
-    //   default:
-    // }
     return result;
+  }
+
+  @override
+  Future<void> registerSecretKey() async {
+    await methodChannel.invokeMethod('registerSecretKey');
   }
 }

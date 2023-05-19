@@ -61,8 +61,22 @@ class _MyAppState extends State<MyApp> {
             width: double.maxFinite,
             child: Padding(
               padding: const EdgeInsets.all(24),
-              child: Text('Running on: ${platformVersion.toString()}\n ',
-                  textAlign: TextAlign.center, softWrap: true),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Running on: ${platformVersion.toString()}\n ',
+                      textAlign: TextAlign.center, softWrap: true),
+                  const SizedBox(
+                    height: 42,
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await _didChangeBiometricsPlugin.registerSecretKey();
+                    },
+                    child: const Text('Register New SecretKey'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

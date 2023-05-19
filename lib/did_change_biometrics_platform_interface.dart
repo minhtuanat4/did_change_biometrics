@@ -1,7 +1,6 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'did_change_biometrics_method_channel.dart';
-import 'status_enum.dart';
 
 abstract class DidChangeBiometricsPlatform extends PlatformInterface {
   /// Constructs a DidChangeBiometricsPlatform.
@@ -30,6 +29,10 @@ abstract class DidChangeBiometricsPlatform extends PlatformInterface {
   }
 
   Future<String?> onCheckBiometrics() {
+    throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<void> registerSecretKey() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 }
