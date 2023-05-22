@@ -26,11 +26,12 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
                     case 200:
                         result(data)
                     case -7:
-                        result(FlutterError(code:"biometric_invalid",message:"Invalid biometric",details: data as Any))
+                        result("biometric_invalid")
+                        // result(FlutterError(code:"biometric_invalid",message:"Invalid biometric",details: data as Any))
                     case 998:
-                        result(FlutterError(code:"biometric_valid",message:data,details: nil))
+                        result("biometric_valid")
                     default:
-                        result(FlutterError(code:"unknow", message: data, details: nil))
+                        result("Unknow")
                     }}
 
             case "registerSecretKey": 
