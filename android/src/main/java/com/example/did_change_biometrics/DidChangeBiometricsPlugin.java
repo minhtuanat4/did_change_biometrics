@@ -39,7 +39,8 @@ import java.security.KeyStore;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
 
 
 
@@ -56,11 +57,13 @@ public class DidChangeBiometricsPlugin
   private Activity activity;
   private String KEY_NAME = "did_change_biometrics";
   private KeyStore keyStore;
+  BiometricManager biometricManager;
+
+
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-
     activity = binding.getActivity();
-
+    biometricManager = BiometricManager.from(activity);
   }
 
   @Override
@@ -142,27 +145,33 @@ private Cipher getCipher() {
 }
 
 private void authenticateFingerPrint(Result result) {
-  Cipher cipher = getCipher();
-  SecretKey secretKey = getSecretKey();
-  if (secretKey == null) {
-    generateSecretKey(new KeyGenParameterSpec.Builder(
-        KEY_NAME,
-        KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-        .setUserAuthenticationRequired(true)
-        .setInvalidatedByBiometricEnrollment(true)
-        .build());
+  boolean isEnableBiometrics = biometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+          == BiometricManager.BIOMETRIC_SUCCESS;
+    if (isEnableBiometrics) {
+      Cipher cipher = getCipher();
+    SecretKey secretKey = getSecretKey();
+    if (secretKey == null) {
+      generateSecretKey(new KeyGenParameterSpec.Builder(
+          KEY_NAME,
+          KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+          .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+          .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+          .setUserAuthenticationRequired(true)
+          .setInvalidatedByBiometricEnrollment(true)
+          .build());
+    }
+    try {
+      cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+      result.success("biometric_valid");
+    } catch (KeyPermanentlyInvalidatedException e) {
+      System.out.print("key has changed");
+      result.success("biometric_did_change");
+    } catch (InvalidKeyException e) {
+      e.printStackTrace();
+      result.success("biometric_invalid");
+    }
+    } else {
+      result.success("biometric_disenable");
+    }
   }
-  try {
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-    result.success("biometric_valid");
-  } catch (KeyPermanentlyInvalidatedException e) {
-    System.out.print("key has changed");
-    result.success("biometric_did_change");
-  } catch (InvalidKeyException e) {
-    e.printStackTrace();
-    result.success("biometric_invalid");
-  }
-}
 }

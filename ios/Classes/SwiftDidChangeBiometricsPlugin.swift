@@ -30,10 +30,12 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
                         // result(FlutterError(code:"biometric_invalid",message:"Invalid biometric",details: data as Any))
                     case 998:
                         result("biometric_valid")
+                    case 999:
+                        result(data)
                     default:
                         result("Unknow")
                     }}
-
+                    
             case "registerSecretKey": 
                 registerSecretKey()
             default:
@@ -48,7 +50,7 @@ public class SwiftDidChangeBiometricsPlugin: NSObject, FlutterPlugin {
         var authError : NSError?
         
         guard context.canEvaluatePolicy(policy, error: &authError) else {
-            complete(nil, authError?.code)
+            complete("biometric_disenable", 999)
             return
         }
         
