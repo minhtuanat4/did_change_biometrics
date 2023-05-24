@@ -145,10 +145,17 @@ private Cipher getCipher() {
 }
 
 private void authenticateFingerPrint(Result result) {
-  boolean isEnableBiometrics = biometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-          == BiometricManager.BIOMETRIC_SUCCESS;
-    if (isEnableBiometrics) {
-      Cipher cipher = getCipher();
+  int typeBiometric = 990;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        typeBiometric =  biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG | BiometricManager.Authenticators.DEVICE_CREDENTIAL);
+      } else {
+        typeBiometric = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
+      }
+    System.out.println("--------------- " +   String.valueOf(typeBiometric));
+
+    if (typeBiometric
+          == BiometricManager.BIOMETRIC_SUCCESS) {
+    Cipher cipher = getCipher();
     SecretKey secretKey = getSecretKey();
     if (secretKey == null) {
       generateSecretKey(new KeyGenParameterSpec.Builder(
@@ -170,8 +177,9 @@ private void authenticateFingerPrint(Result result) {
       e.printStackTrace();
       result.success("biometric_invalid");
     }
-    } else {
+    } else if (typeBiometric
+          == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED){
       result.success("biometric_disenable");
-    }
+    } 
   }
 }
