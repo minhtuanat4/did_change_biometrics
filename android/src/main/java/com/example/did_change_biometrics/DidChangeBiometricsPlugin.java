@@ -180,6 +180,8 @@ private void authenticateFingerPrint(Result result) {
     } else if (typeBiometric
           == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED){
       result.success("biometric_disenable");
-    } 
+    } else {
+      result.success("biometric_disenable");
+    }
   }
 }
