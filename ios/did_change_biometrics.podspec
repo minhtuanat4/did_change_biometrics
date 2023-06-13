@@ -17,7 +17,7 @@ A new Flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   # s.source           = { :git => "https://github.com/artsy/Artsy-OSSUIFonts.git", :tag => s.version }
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '11.0'
   
 
   # Flutter.framework does contain a  x86_64 i386 arm64 slice.
@@ -25,5 +25,5 @@ A new Flutter plugin project.
   # s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
   # s.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
   s.swift_version = '5.0'
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '11.0'
 end
