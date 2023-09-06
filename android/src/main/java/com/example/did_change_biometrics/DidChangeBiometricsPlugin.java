@@ -86,7 +86,10 @@ public class DidChangeBiometricsPlugin
     if (call.method.equals("check")) {
       authenticateFingerPrint(result);
     } else if (call.method.equals("registerSecretKey")) {
-        generateSecretKey(new KeyGenParameterSpec.Builder(
+        int typeBiometric =  biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
+        if (typeBiometric
+              == BiometricManager.BIOMETRIC_SUCCESS) {
+         generateSecretKey(new KeyGenParameterSpec.Builder(
         KEY_NAME,
         KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
         .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
@@ -94,6 +97,13 @@ public class DidChangeBiometricsPlugin
         .setUserAuthenticationRequired(true)
         .setInvalidatedByBiometricEnrollment(true)
         .build());
+         System.out.println(" Valid registerSecretKey");    
+        } else {
+          removeSecretKey();
+          System.out.println(" biometric_disenable: Error registerSecretKey"); 
+          result.success("biometric_disenable");
+        }
+    
     } else {
       result.notImplemented();
     }
@@ -134,6 +144,18 @@ private SecretKey getSecretKey() {
   }
 }
 
+private boolean removeSecretKey() {
+  try {
+      keyStore = KeyStore.getInstance("AndroidKeyStore");
+      keyStore.load(null);
+      keyStore.deleteEntry(KEY_NAME);
+      return true;
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
+  return false;
+}
+
 private Cipher getCipher() {
   try {//ww  w .  j ava2  s  .c o m
     return Cipher.getInstance(KeyProperties.KEY_ALGORITHM_AES + "/"
@@ -171,11 +193,15 @@ private void authenticateFingerPrint(Result result) {
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
       result.success("biometric_valid");
     } catch (KeyPermanentlyInvalidatedException e) {
-      System.out.print("key has changed");
+      System.out.println("key has changed");
       result.success("biometric_did_change");
     } catch (InvalidKeyException e) {
       e.printStackTrace();
-      result.success("biometric_invalid");
+      if (secretKey == null){
+        result.success("biometric_disenable");
+      }else {
+        result.success("biometric_invalid");
+      }
     }
     } else if (typeBiometric
           == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED){
